@@ -77,7 +77,7 @@ public class BrokerConfiguration {
 
     @Bean
     public Catalog catalog() throws IOException {
-        ServiceDefinition serviceDefinition = new ServiceDefinition("s3", "amazon-s3",
+        ServiceDefinition serviceDefinition = new ServiceDefinition("s3", "s3",
                 "Amazon S3 is storage for the Internet.", true, getPlans(), getTags(), getServiceDefinitionMetadata(),
                 Arrays.asList("syslog_drain"), null);
         return new Catalog(Arrays.asList(serviceDefinition));
