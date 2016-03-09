@@ -2,5 +2,4 @@ box: maven:latest
 build:
   steps:
     - xenoterracide/maven:
-        goals: package
-        settings: -Dmaven.test.skip=true
+        goals: package -Dmaven.test.skip=true
