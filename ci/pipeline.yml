@@ -1,0 +1,61 @@
+---
+jobs:
+- name: push-s3-broker
+  plan:
+  - get: s3-broker-app
+    trigger: true
+  - task: build
+    file: s3-broker-app/ci/build.yml
+    params:
+      AWS_ACCESS_KEY: {{test-aws-access-key-id}}
+      AWS_SECRET_KEY: {{test-aws-secret-access-key}}
+  - put: deploy-s3-broker-app
+    params:
+      manifest: s3-broker-build/manifest.yml
+      current_app_name: s3-broker
+      environment_variables:
+        SECURITY_USER_NAME: {{auth-name}}
+        SECURITY_USER_PASSWORD: {{auth-pass}}
+        AWS_ACCESS_KEY: {{aws-access-key-id}}
+        AWS_SECRET_KEY: {{aws-secret-access-key}}
+
+    on_failure:
+      put: slack
+      params:
+        text: |
+          :x: FAILED to deploy s3-broker on production
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        channel: {{slack-channel}}
+        username: {{slack-username}}
+        icon_url: {{slack-icon-url}}
+    on_success:
+      put: slack
+      params:
+        text: |
+          :white_check_mark: Successfully deployed s3-broker on production
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        channel: {{slack-channel}}
+        username: {{slack-username}}
+        icon_url: {{slack-icon-url}}
+
+resources:
+- name: s3-broker-app
+  type: git
+  source:
+    uri: {{s3-broker-url}}
+    branch: {{s3-broker-branch}}
+
+- name: deploy-s3-broker-app
+  type: cf
+  source:
+    api: {{cf-api-url}}
+    username: {{cf-deploy-username}}
+    password: {{cf-deploy-password}}
+    organization: {{cf-organization}}
+    space: {{cf-space}}
+    skip_cert_check: false
+
+- name: slack
+  type: slack-notification
+  source:
+    url: {{slack-webhook-url}}
