@@ -1,8 +1,8 @@
 ---
 applications:
-  - name: s3-service-broker
+  - name: s3-service-broker-josh-test
     buildpack: java_buildpack
-    host: s3-broker
+    host: s3-broker-josh-test
     domain: apps.cloud.gov
     path: target/s3-cf-service-broker-2.0.0-SNAPSHOT.jar
     env:
