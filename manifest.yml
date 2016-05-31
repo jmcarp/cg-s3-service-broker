@@ -2,8 +2,8 @@
 applications:
   - name: s3-service-broker
     buildpack: java_buildpack
-    host: s3-broker
-    domain: apps.cloud.gov
+    # host: s3-broker
+    # domain: apps.cloud.gov
     path: target/s3-cf-service-broker-2.0.0-SNAPSHOT.jar
     env:
 #      AWS_ACCESS_KEY: xxx

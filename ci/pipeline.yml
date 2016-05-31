@@ -14,8 +14,8 @@ jobs:
       manifest: s3-broker-build/manifest.yml
       current_app_name: s3-broker
       environment_variables:
-        SECURITY_USER_NAME: {{auth-name}}
-        SECURITY_USER_PASSWORD: {{auth-pass}}
+        SECURITY_USER_NAME: {{staging-auth-name}}
+        SECURITY_USER_PASSWORD: {{staging-auth-pass}}
         AWS_ACCESS_KEY: {{aws-access-key-id}}
         AWS_SECRET_KEY: {{aws-secret-access-key}}
 
@@ -38,6 +38,26 @@ jobs:
         username: {{slack-username}}
         icon_url: {{slack-icon-url}}
 
+  - task: update-broker
+    file: s3-broker-app/ci/update-broker.yml
+    params:
+      <<: *staging-cf-creds
+      # Note: name must match application name in manifest
+      BROKER_NAME: s3-service-broker
+      AUTH_USER: {{staging-auth-name}}
+      AUTH_PASS: {{staging-auth-pass}}
+      PLAN_NAME: s3
+
+# - name: push-s3-broker
+#   plan:
+#   - get: s3-broker-app
+#     passed: [push-s3-broker]
+#     trigger: true
+#   - task: smoke-tests-s3
+#     file: s3-broker-app/ci/run-smoke-tests.yml
+#     params:
+#       <<: *staging-cf-creds
+
 resources:
 - name: s3-broker-app
   type: git
@@ -48,14 +68,21 @@ resources:
 - name: deploy-s3-broker-app
   type: cf
   source:
-    api: {{cf-api-url}}
-    username: {{cf-deploy-username}}
-    password: {{cf-deploy-password}}
-    organization: {{cf-organization}}
-    space: {{cf-space}}
+    api: {{staging-cf-api-url}}
+    username: {{staging-cf-deploy-username}}
+    password: {{staging-cf-deploy-password}}
+    organization: {{staging-cf-organization}}
+    space: {{staging-cf-space}}
     skip_cert_check: false
 
 - name: slack
   type: slack-notification
   source:
     url: {{slack-webhook-url}}
+
+staging-cf-creds: &staging-cf-creds
+  CF_API_URL: {{staging-cf-api-url}}
+  CF_DEPLOY_USERNAME: {{staging-cf-deploy-username}}
+  CF_DEPLOY_PASSWORD: {{staging-cf-deploy-password}}
+  CF_ORGANIZATION: {{staging-cf-organization}}
+  CF_SPACE: {{staging-cf-space}}
