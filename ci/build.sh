@@ -3,5 +3,5 @@
 set -e -x
 
 cd s3-broker-app
-mvn package -Dmaven.test.skip=true
+mvn package
 cp -r . ../s3-broker-build
