@@ -2,6 +2,6 @@
 applications:
 - name: s3-smoke-tests
   buildpack: binary_buildpack
+  command: ./smoke-tests.sh
   services:
   - s3-smoke-tests-basic
-  command: ./smoke-tests.sh
