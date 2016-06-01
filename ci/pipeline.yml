@@ -48,15 +48,16 @@ jobs:
       AUTH_PASS: {{staging-auth-pass}}
       PLAN_NAME: s3
 
-# - name: push-s3-broker
-#   plan:
-#   - get: s3-broker-app
-#     passed: [push-s3-broker]
-#     trigger: true
-#   - task: smoke-tests-s3
-#     file: s3-broker-app/ci/run-smoke-tests.yml
-#     params:
-#       <<: *staging-cf-creds
+- name: acceptance-tests-staging
+  plan:
+  - get: s3-broker-app
+    passed: [push-s3-broker]
+    trigger: true
+  - task: smoke-tests-s3
+    file: s3-broker-app/ci/run-smoke-tests.yml
+    params:
+      <<: *staging-cf-creds
+      SERVICE_PLAN: basic
 
 resources:
 - name: s3-broker-app
